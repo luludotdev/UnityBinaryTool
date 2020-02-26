@@ -266,5 +266,9 @@ __pycache__/
 # Cache Directory
 .cache/
 
+# Build Directories
+.build/
+dotnetwarp_temp/
+
 # Generated Zips
 *.zip

@@ -1,0 +1,48 @@
+name: .NET Build
+on: [push]
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: Setup dotnet
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: '3.1.100'
+    - name: Install warp
+      run: dotnet tool install --global dotnet-warp --version 1.1.0
+    - name: Prepare build directory
+      shell: bash
+      run: |
+        mkdir .build
+        cp "LICENSE" ".build/LICENSE.UnityBinaryTool.txt"
+    - name: Build project
+      run: dotnet warp -o .build/UnityBinaryTool.exe
+    - name: Upload Build
+      if: contains(github.ref, 'refs/tags/') == false
+      uses: actions/upload-artifact@v1
+      with:
+        name: UnityBinaryTool-${{ github.sha }}
+        path: ./.build
+    - name: Create Release
+      if: contains(github.ref, 'refs/tags/') == true
+      id: create_release
+      uses: actions/create-release@v1.0.0
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: Unity Binary Tool ${{ github.ref }}
+        draft: false
+        prerelease: false
+    - name: Upload Release Asset
+      if: contains(github.ref, 'refs/tags/') == true
+      uses: actions/upload-release-asset@v1.0.1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./.build/UnityBinaryTool.exe
+        asset_name: UnityBinaryTool.exe
+        asset_content_type: application/vnd.microsoft.portable-executable
