@@ -94,7 +94,7 @@ namespace UnityBinaryTool.Unity
       return Assets[version];
     }
 
-    private static async Task DownloadEditor(string version)
+    private static async Task DownloadEditor(string version, IProgress<double> progress)
     {
       Asset? assets = await GetDownloadAssets(version).ConfigureAwait(false);
 
@@ -113,11 +113,29 @@ namespace UnityBinaryTool.Unity
       using (var content = await resp.Content.ReadAsStreamAsync().ConfigureAwait(false))
       using (var fs = File.OpenWrite(stagingPath))
       {
-        await content.CopyToAsync(fs).ConfigureAwait(false);
+        byte[] buffer = new byte[1 << 13];
+        int bytesRead;
+
+        long? contentLength = resp.Content.Headers.ContentLength;
+        long totalRead = 0;
+        progress?.Report(0);
+
+        while ((bytesRead = await content.ReadAsync(buffer, 0, buffer.Length).ConfigureAwait(false)) > 0)
+        {
+          if (contentLength != null)
+          {
+            double prog = (double)totalRead / (double)contentLength;
+            progress?.Report(prog);
+          }
+
+          await fs.WriteAsync(buffer, 0, bytesRead).ConfigureAwait(false);
+          totalRead += bytesRead;
+        }
       }
 
       string finalPath = Path.Combine(InstallerCachePath, Path.GetFileName(url));
       File.Move(stagingPath, finalPath);
+      progress?.Report(1);
 
       var entry = _assets[version];
       if (Program.Options.Prefer32Bit) entry.Win32Path = finalPath;
@@ -125,12 +143,13 @@ namespace UnityBinaryTool.Unity
       _assets[version] = entry;
     }
 
-    public static async Task<Asset> GetEditorAsset(string version)
+    public static async Task<Asset> GetEditorAsset(string version, IProgress<double> progress = null)
     {
       Asset? asset = await GetDownloadAssets(version).ConfigureAwait(false);
       string path = asset?.Path(Program.Options.Prefer32Bit);
-      if (path is null && asset?.Extracted == false) await DownloadEditor(version).ConfigureAwait(false);
+      await DownloadEditor(version, progress).ConfigureAwait(false);
 
+      progress?.Report(1);
       return _assets[version];
     }
   }
