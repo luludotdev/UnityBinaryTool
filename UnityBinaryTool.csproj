@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <LangVersion>8.0</LangVersion>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <RootNamespace>UnityBinaryTool</RootNamespace>
+
+    <Version>1.0.0</Version>
+    <Authors>lolPants</Authors>
+    <Company>Jack Baron DEV</Company>
+    <Description>Tool to download and package Unity DLLs</Description>
+    <Copyright>Copyright © Jack Baron DEV 2020</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <RepositoryUrl>https://github.com/lolPants/UnityBinaryTool.git</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/lolPants/UnityBinaryTool</PackageProjectUrl>
+    <PackageTags>unity binary dll tool download package</PackageTags>
+    <NeutralLanguage>en-GB</NeutralLanguage>
+    <RepositoryType>git</RepositoryType>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CommandLineParser" Version="2.7.82" />
+  </ItemGroup>
+
+</Project>
