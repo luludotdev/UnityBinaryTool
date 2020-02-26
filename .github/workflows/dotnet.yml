@@ -18,7 +18,7 @@ jobs:
         mkdir .build
         cp "LICENSE" ".build/LICENSE.UnityBinaryTool.txt"
     - name: Build project
-      run: dotnet warp -o .build/UnityBinaryTool.exe
+      run: dotnet warp --verbose -o .build/UnityBinaryTool.exe
     - name: Upload Build
       if: contains(github.ref, 'refs/tags/') == false
       uses: actions/upload-artifact@v1
