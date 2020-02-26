@@ -22,3 +22,6 @@ You can download 7-zip from [their website](https://www.7-zip.org/).
 This tool is packaged as a single exe using .NET Warp. This means it contains all the .NET Core runtime required to execute inside of the executable. On first run, it will extract the required runtime to a temporary directory and continue from there.
 
 You can grab a release binary from the [Releases](https://github.com/lolPants/UnityBinaryTool/releases) page, or an indev binary from the [CI Workflow artifacts](https://github.com/lolPants/UnityBinaryTool/actions).
+
+## ⚠️ Known Limitations
+* This tool only packages core Unity DLLs, meaning any DLLs used in games that come from external sources (ie: Unity Package Manager) will not be included.
